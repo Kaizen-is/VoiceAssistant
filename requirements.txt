@@ -1,0 +1,27 @@
+# Core AI stack
+faster-whisper==1.0.3
+openwakeword==0.6.0
+google-genai>=0.3.0
+omnivoice  # k2-fsa OmniVoice — install AFTER torch (see README)
+
+# Audio I/O
+sounddevice==0.4.7
+soundfile==0.12.1
+numpy>=1.26,<3.0   # numpy 2.x needed for prebuilt wheels on Python 3.13
+
+# Windows OS control
+psutil==6.0.0
+pycaw==20240210  # Windows volume control
+comtypes==1.4.5  # pycaw dependency
+
+# Utils
+python-dotenv==1.0.1
+truststore>=0.10  # route Python SSL through the OS trust store (Windows CA fix)
+
+# --- Fine-tuning & response stylizer (Qwen + LoRA) ---
+transformers>=4.44.0
+peft>=0.12.0
+trl>=0.11.0
+bitsandbytes>=0.43.0
+accelerate>=0.33.0
+datasets>=2.20.0
