@@ -21,7 +21,7 @@ WHISPER_DEVICE = "cuda"             # запуск на GPU; "cpu" — запа�
 WHISPER_COMPUTE = "float16"         # float16 на GPU, int8 на CPU
 
 # --- LLM / Роутинг команд через Gemini ---
-GEMINI_MODEL = "gemini-2.0-flash"   # быстрая модель с tool calling
+GEMINI_MODEL = "gemini-flash-latest"   # always the current stable Flash model
 LLM_SYSTEM_PROMPT = (
     "You are Jarvis, a bilingual (Russian/English) voice assistant "
     "running on the user's Windows PC. When the user gives a command, "
