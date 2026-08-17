@@ -1,19 +1,36 @@
-# Voice reference clip
+# Voice reference clips
 
-Put a **3–10 second WAV file** here named `jarvis_10s.wav`. OmniVoice will
-clone this voice on every response.
+Two fixed reference clips live here — one per language. Every runtime TTS
+call clones from one of them (English response → `ref_en.wav`, Russian
+response → `ref_ru.wav`), which keeps the voice identity stable across
+every generation.
 
-## Requirements
-- Format: WAV, mono preferred (stereo is auto-mixed)
-- Sample rate: any (OmniVoice resamples internally)
-- Duration: 3–10 seconds; ~7 s is a good sweet spot
-- Content: clean speech, no music/background noise, no long silences
-- Speaker: keep it consistent — one person, one language works best
+## Files
+- `ref_en.wav` — English reference (British male, `en-GB-RyanNeural`)
+- `ref_ru.wav` — Russian reference (Russian male, `ru-RU-DmitryNeural`)
 
-## Where to get a Jarvis clip
-- Rip ~7 s of dialogue from an Iron Man scene where JARVIS is speaking
-  clearly (YouTube → `yt-dlp` → `ffmpeg -ss <start> -t 7 -ac 1 -ar 24000 out.wav`)
-- Or record any voice you want Jarvis to sound like
+## Generating them
 
-Legal note: the OmniVoice model is **CC-BY-NC** — non-commercial use only.
-Fine for a course project; do not ship this commercially.
+Both are produced by a one-shot script that hits Microsoft's edge-tts
+endpoint:
+
+```powershell
+python generate_ref_voices.py
+```
+
+The exact text of each clip is baked into `config.py` (`TTS_REF_TEXT_EN` /
+`TTS_REF_TEXT_RU`) so OmniVoice does not have to auto-transcribe them at
+runtime.
+
+## Swapping voices
+
+Prefer a different-sounding Jarvis? Pick another edge-tts voice from
+`edge-tts --list-voices`, update `REF_EN_VOICE` / `REF_RU_VOICE` in
+`generate_ref_voices.py`, and re-run the script. The clips overwrite in
+place; no config change needed unless you also change the reference text.
+
+## Legal
+
+OmniVoice is **CC-BY-NC** — non-commercial use only. Fine for a course
+project; do not ship this commercially. The edge-tts endpoint is a
+Microsoft Azure Cognitive Services free tier, subject to their terms.

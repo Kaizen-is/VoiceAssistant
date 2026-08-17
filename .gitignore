@@ -3,7 +3,8 @@ __pycache__/
 *.pyc
 models/
 *.wav
-!assets/jarvis_10s.wav
+!assets/ref_en.wav
+!assets/ref_ru.wav
 .venv/
 venv/
 .idea/

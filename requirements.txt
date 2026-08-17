@@ -17,6 +17,7 @@ comtypes==1.4.5  # pycaw dependency
 # Utils
 python-dotenv==1.0.1
 truststore>=0.10  # route Python SSL through the OS trust store (Windows CA fix)
+edge-tts>=7.0    # one-shot: generates the fixed RU/EN reference clips
 
 # --- Fine-tuning & response stylizer (Qwen + LoRA) ---
 transformers>=4.44.0

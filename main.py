@@ -68,8 +68,8 @@ def main() -> None:
             response = stylizer.stylize(raw) if stylizer else raw
             print(f"Say: {response}\n")
 
-            # Синтез и воспроизведение
-            wav, sr = tts.speak(response)
+            # Синтез и воспроизведение — используем эталон под язык команды
+            wav, sr = tts.speak(response, lang=lang)
             play(wav, sr)
 
         except KeyboardInterrupt:

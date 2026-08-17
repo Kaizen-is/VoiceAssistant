@@ -31,7 +31,14 @@ LLM_SYSTEM_PROMPT = (
 )
 
 # --- TTS / Синтез речи с клоном голоса ---
-TTS_REF_AUDIO = ASSETS / "jarvis_10s.wav"   # эталонное аудио 3-10 секунд
+# Two FIXED reference clips (generated once by generate_ref_voices.py).
+# Every response clones from ref_en for English, ref_ru for Russian —
+# this keeps the voice identity stable across every generation.
+TTS_REF_EN = ASSETS / "ref_en.wav"
+TTS_REF_RU = ASSETS / "ref_ru.wav"
+# Точный текст эталонов — передаём OmniVoice, чтобы не тратить время на транскрипцию
+TTS_REF_TEXT_EN = "Hello sir. All systems are online. I am at your service."
+TTS_REF_TEXT_RU = "Здравствуйте, сэр. Все системы работают исправно. Я к вашим услугам."
 TTS_DEVICE = "cuda:0"
 TTS_OUTPUT_SR = 24_000                       # OmniVoice выдаёт 24 кГц
 
