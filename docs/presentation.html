@@ -43,17 +43,16 @@
     position: absolute; inset: 0;
     display: flex; flex-direction: column;
     padding: 6vh 8vw;
-    opacity: 0; transform: translateX(30px);
-    transition: opacity 0.35s ease, transform 0.35s ease;
+    opacity: 0;
+    transition: opacity 0.3s ease;
     pointer-events: none;
     overflow: auto;
+    z-index: 1;
   }
   .slide.active {
-    opacity: 1; transform: translateX(0);
+    opacity: 1;
     pointer-events: auto;
-  }
-  .slide.prev {
-    transform: translateX(-30px);
+    z-index: 2;
   }
   h1 { font-size: clamp(2rem, 5vw, 4rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
   h2 { font-size: clamp(1.4rem, 3vw, 2.4rem); font-weight: 700; letter-spacing: -0.015em; margin-bottom: 0.6em; }
@@ -106,11 +105,38 @@
   .callout.win .tag { color: var(--accent-3); }
 
   /* Progress + nav */
-  .progress { position: fixed; bottom: 0; left: 0; right: 0; height: 3px; background: var(--bg-2); z-index: 10; }
+  .progress { position: fixed; bottom: 0; left: 0; right: 0; height: 3px; background: var(--bg-2); z-index: 20; }
   .progress .bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width 0.3s ease; }
-  .slide-num { position: fixed; bottom: 1em; right: 1.5em; color: var(--fg-2); font-size: 0.8rem; font-family: var(--font-mono); z-index: 10; }
-  .hint { position: fixed; bottom: 1em; left: 1.5em; color: var(--fg-2); font-size: 0.75rem; font-family: var(--font-mono); z-index: 10; }
+  .slide-num { position: fixed; bottom: 1em; right: 1.5em; color: var(--fg-2); font-size: 0.8rem; font-family: var(--font-mono); z-index: 20; }
+  .hint { position: fixed; bottom: 1em; left: 1.5em; color: var(--fg-2); font-size: 0.75rem; font-family: var(--font-mono); z-index: 20; }
   .hint kbd { background: var(--bg-2); padding: 0.15em 0.4em; border-radius: 4px; border: 1px solid var(--border); font-family: inherit; color: var(--fg-1); font-size: 0.9em; }
+
+  /* Click zones — invisible full-height regions on left/right for click navigation */
+  .nav-zone {
+    position: fixed; top: 0; bottom: 0; width: 18vw;
+    z-index: 15;
+    cursor: pointer;
+    display: flex; align-items: center;
+    background: transparent;
+    transition: background 0.2s ease;
+  }
+  .nav-zone.prev { left: 0; justify-content: flex-start; padding-left: 1.5em; }
+  .nav-zone.next { right: 0; justify-content: flex-end; padding-right: 1.5em; }
+  .nav-zone:hover {
+    background: linear-gradient(to right, rgba(125,211,252,0.06), transparent);
+  }
+  .nav-zone.next:hover {
+    background: linear-gradient(to left, rgba(125,211,252,0.06), transparent);
+  }
+  .nav-arrow {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--bg-1); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--fg-1); font-size: 1.4rem; font-weight: 300;
+    opacity: 0; transition: opacity 0.2s ease;
+    user-select: none;
+  }
+  .nav-zone:hover .nav-arrow { opacity: 1; }
 
   /* Utility */
   .accent { color: var(--accent); }
@@ -129,7 +155,6 @@
     <h1>Jarvis<span class="accent">Assistant</span></h1>
     <p class="tagline">A bilingual, locally-hosted voice assistant for Windows — fine-tuned Qwen stylizer, language-consistent voice cloning, extensible in two lines of Python per new command.</p>
     <div class="meta">
-      <div>Author<span>Junior Jumanazarov</span></div>
       <div>Hardware<span>RTX 3060 · 12 GB</span></div>
       <div>Repository<span>github.com/Kaizen-is/VoiceAssistant</span></div>
       <div>Date<span>2026-08-16</span></div>
@@ -472,16 +497,17 @@ SKILLS = {
     <p class="tagline">Where do you want me to open the code first — the dispatcher, the training script, or the live loop?</p>
     <div class="meta" style="margin-top: 2em;">
       <div>Repository<span>github.com/Kaizen-is/VoiceAssistant</span></div>
-      <div>Author<span>Junior Jumanazarov</span></div>
-      <div>Contact<span>juniorjumanazarov@gmail.com</span></div>
     </div>
   </section>
 
 </div>
 
+<div class="nav-zone prev" id="prevZone" title="Previous slide"><div class="nav-arrow">‹</div></div>
+<div class="nav-zone next" id="nextZone" title="Next slide"><div class="nav-arrow">›</div></div>
+
 <div class="progress"><div class="bar" id="bar"></div></div>
 <div class="slide-num" id="num">1 / 13</div>
-<div class="hint"><kbd>←</kbd> <kbd>→</kbd> to navigate · <kbd>F</kbd> fullscreen · <kbd>Esc</kbd> exit</div>
+<div class="hint">click <kbd>left</kbd> or <kbd>right</kbd> side · <kbd>←</kbd> <kbd>→</kbd> keys · <kbd>F</kbd> fullscreen</div>
 
 <script>
   const slides = document.querySelectorAll('.slide');
@@ -490,20 +516,23 @@ SKILLS = {
   let i = 0;
 
   function show(next) {
-    if (next < 0 || next >= slides.length) return;
+    if (next < 0 || next >= slides.length || next === i) return;
     slides[i].classList.remove('active');
-    slides[i].classList.add(next < i ? 'prev' : '');
-    slides[next].classList.remove('prev');
     slides[next].classList.add('active');
     i = next;
     bar.style.width = ((i + 1) / slides.length * 100) + '%';
     num.textContent = (i + 1) + ' / ' + slides.length;
-    window.scrollTo(0, 0);
+    slides[next].scrollTop = 0;
   }
 
+  function next() { show(i + 1); }
+  function prev() { show(i - 1); }
+
+  // Keyboard
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(i + 1); }
-    else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) { e.preventDefault(); show(i - 1); }
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    else if (e.key === ' ') { e.preventDefault(); e.shiftKey ? prev() : next(); }
     else if (e.key === 'f' || e.key === 'F') {
       if (document.fullscreenElement) document.exitFullscreen();
       else document.documentElement.requestFullscreen();
@@ -512,13 +541,9 @@ SKILLS = {
     else if (e.key === 'End') show(slides.length - 1);
   });
 
-  // Click-to-advance on the right half, back on the left half
-  document.addEventListener('click', (e) => {
-    if (e.target.closest('a, button, kbd, code, pre')) return;
-    const w = window.innerWidth;
-    if (e.clientX > w / 2) show(i + 1);
-    else show(i - 1);
-  });
+  // Explicit click zones — always fire, unaffected by slide content
+  document.getElementById('prevZone').addEventListener('click', prev);
+  document.getElementById('nextZone').addEventListener('click', next);
 
   bar.style.width = (1 / slides.length * 100) + '%';
 </script>
