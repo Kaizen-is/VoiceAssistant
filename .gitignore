@@ -7,6 +7,7 @@ models/
 !assets/ref_ru.wav
 .venv/
 venv/
+.python311/
 .idea/
 .vscode/
 .pytest_cache/
